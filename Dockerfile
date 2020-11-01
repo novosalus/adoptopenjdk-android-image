@@ -60,4 +60,7 @@ RUN chmod a+x -R $ANDROID_HOME && \
     rm -rf /opt/android/licenses && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     apt-get -y autoremove && \
-    apt-get -y clean && java -v
+    apt-get -y clean
+
+#smoke test after apt-get cleaning
+RUN java -version
