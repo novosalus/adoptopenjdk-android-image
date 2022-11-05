@@ -1,4 +1,4 @@
-FROM novosalus/amc-adopt-open-jdk-base:latest
+FROM novosalus/amc-adopt-open-jdk-base:focal-jdk-11
 
 ARG BUILD_DATE
 ARG BUILD_VERSION
@@ -10,24 +10,24 @@ LABEL maintainer="Ritesh Chaudhari <ritesh@novosalus.com>" \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.schema-version="1.0" \
       org.label-schema.vcs-url="https://github.com/novosalus/adoptopenjdk-android-image.git" \
-      org.label-schema.name="novosalus/adoptopenjdk-android-image" \
+      org.label-schema.name="novosalus/adoptopenjdk-android" \
       org.label-schema.vendor="Ritesh Chaudhari (Novosalus)" \
       org.label-schema.description="AdoptOpenJDK android docker image" \
       org.label-schema.url="https://novosalus.com/" \
       org.label-schema.license="" \
-      org.opencontainers.image.title="novosalus/adoptopenjdk-android-image" \
+      org.opencontainers.image.title="novosalus/adoptopenjdk-android" \
       org.opencontainers.image.description="AdoptOpenJDK android docker image" \
       org.opencontainers.image.licenses="" \
       org.opencontainers.image.authors="Ritesh Chaudhari" \
       org.opencontainers.image.vendor="Ritesh Chaudhari" \
-      org.opencontainers.image.url="https://hub.docker.com/r/novosalus/adoptopenjdk-android-image" \
+      org.opencontainers.image.url="https://hub.docker.com/r/novosalus/adoptopenjdk-android" \
       org.opencontainers.image.documentation="" \
       org.opencontainers.image.source="https://github.com/novosalus/adoptopenjdk-android-image.git"
 
 # https://developer.android.com/studio/#downloads
 # https://developer.android.com/studio#cmdline-tools
-ENV ANDROID_SDK_URL="https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip" \
-    ANDROID_BUILD_TOOLS_VERSION=30.0.3 \
+ENV ANDROID_SDK_URL="https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip" \
+    ANDROID_BUILD_TOOLS_VERSION=32.0.0 \
     ANT_HOME="/usr/share/ant" \
     MAVEN_HOME="/usr/share/maven" \
     GRADLE_HOME="/usr/share/gradle" \
@@ -46,13 +46,14 @@ RUN mkdir android && cd android && \
     wget -O tools.zip ${ANDROID_SDK_URL} && \
     unzip tools.zip && rm tools.zip
 
-ENV PATH=/opt/jdk8u272-b10/bin:${PATH}
-ENV JAVA_HOME=/opt/jdk8u272-b10
+#ENV PATH=/opt/jdk8u272-b10/bin:${PATH}
+#ENV JAVA_HOME=/opt/jdk8u272-b10
 
 RUN mkdir /root/.android && touch /root/.android/repositories.cfg && \
     while true; do echo 'y'; sleep 2; done | sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools" "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" && \
     while true; do echo 'y'; sleep 2; done | sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-22" "platforms;android-23" "platforms;android-24" "platforms;android-25" "platforms;android-26" "platforms;android-27" && \
-    while true; do echo 'y'; sleep 2; done | sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-28" "platforms;android-29" "platforms;android-30"
+    while true; do echo 'y'; sleep 2; done | sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-28" "platforms;android-29" "platforms;android-30" && \
+    while true; do echo 'y'; sleep 2; done | sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-31" "platforms;android-32"    
 
 RUN while true; do echo 'y'; sleep 2; done | sdkmanager --sdk_root=${ANDROID_HOME} "extras;android;m2repository" "extras;google;google_play_services" "extras;google;instantapps" "extras;google;m2repository"
 RUN while true; do echo 'y'; sleep 2; done | sdkmanager --sdk_root=${ANDROID_HOME} "add-ons;addon-google_apis-google-22" "add-ons;addon-google_apis-google-23" "add-ons;addon-google_apis-google-24"
@@ -66,3 +67,4 @@ RUN chmod a+x -R $ANDROID_HOME && \
 
 #smoke test after apt-get cleaning
 RUN java -version
+RUN gradle -version
